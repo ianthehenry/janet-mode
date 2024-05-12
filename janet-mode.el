@@ -223,21 +223,26 @@ the syntax table, so `forward-word' works as expected.")
 (defun janet--start-of-first-child ()
   (ignore-errors (down-list) (forward-sexp) (backward-sexp) t))
 
+(defun janet--inside-string ()
+  (not (null (nth 3 (syntax-ppss)))))
+
 (defun janet--calculate-indent ()
   "Calculate the appropriate indentation for the current Janet line."
-  (save-excursion
-    (beginning-of-line)
-    (if (ignore-errors (backward-up-list) t)
-        (let ((opener (char-after)))
-          (cond
-           ((eq opener ?\() (janet--simple-indent))
-           ((or (eq opener ?\[) (eq opener ?\{))
-            (if (janet--start-of-first-child)
-                (current-column)
-              (janet--simple-indent)))
-           (t (message "other") 0)
-           ))
-      0)))
+  (if (janet--inside-string)
+      nil
+    (save-excursion
+      (beginning-of-line)
+      (if (ignore-errors (backward-up-list) t)
+          (let ((opener (char-after)))
+            (cond
+             ((eq opener ?\() (janet--simple-indent))
+             ((or (eq opener ?\[) (eq opener ?\{))
+              (if (janet--start-of-first-child)
+                  (current-column)
+                (janet--simple-indent)))
+             (t (message "other") 0)
+             ))
+        0))))
 
 ;;;###autoload
 (define-derived-mode janet-mode prog-mode "janet"
