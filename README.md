@@ -1,3 +1,7 @@
+# fork notes
+
+This uses a much simpler indentation function that produces results that I prefer. Indentation is more regular and does not depend on the length of a function's name.
+
 janet-mode - A major mode for Janet
 =====================================
 
